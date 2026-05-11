@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SUOBiz — European Business Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+
+<!-- ============================================================
+  ⚙️  CONFIGURATION — fill these in during setup (Step 3 of guide)
+============================================================ -->
+<script>
+  const SUPABASE_URL    = 'https://vowvvfcntmnsjcjtrvwl.supabase.co/rest/v1/';       // e.g. https://abcdefgh.supabase.co
+  const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvd3Z2ZmNudG1uc2pjanRydndsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0Nzk3NjYsImV4cCI6MjA5NDA1NTc2Nn0.aCBLGnNQfd3yZ9Nj-KrzrNEdKEBu2WxK7MUMdkgmOc0';  // long string starting with eyJ…
+  const RESEND_FUNCTION = SUPABASE_URL + '/functions/v1/send-email';
+</script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;--surface3:#242424;
+  --border:#2a2a2a;--border2:#333;
+  --sky:#38bdf8;--sky2:#7dd3fc;--sky-dim:rgba(56,189,248,0.12);--sky-border:rgba(56,189,248,0.3);
+  --text:#f5f5f5;--muted:#6b6b6b;--muted2:#9a9a9a;--white:#ffffff;
+  --green:#34d399;--green-dim:rgba(52,211,153,0.1);--green-border:rgba(52,211,153,0.3);
+  --amber:#fbbf24;--amber-dim:rgba(251,191,36,0.1);--amber-border:rgba(251,191,36,0.3);
+  --red:#f87171;--red-dim:rgba(248,113,113,0.1);--red-border:rgba(248,113,113,0.3);
+}
+body{background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(--text);min-height:100vh}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:300px;min-width:300px;background:var(--surface);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0}
+.main{flex:1;min-width:0;padding:2rem}
+.sidebar-logo{padding:1.5rem 1.5rem 0}
+.logo-mark{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--white);letter-spacing:-0.5px}
+.logo-mark em{color:var(--sky);font-style:normal}
+.logo-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:3px;font-weight:500}
+.sidebar-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.sidebar-section{padding:0 1.5rem;margin-bottom:1.25rem}
+.s-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:500}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px}
+.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:13px;flex:1;font-family:'DM Sans',sans-serif}
+.search-box input::placeholder{color:var(--muted)}
+.search-box i{color:var(--muted);font-size:15px;flex-shrink:0}
+.range-row{display:flex;align-items:center;gap:10px}
+.range-row input[type=range]{flex:1;accent-color:var(--sky);height:3px;cursor:pointer}
+.range-val{font-size:12px;font-weight:600;color:var(--sky2);min-width:64px;text-align:right;white-space:nowrap}
+.ind-wrap{display:flex;flex-wrap:wrap;gap:5px}
+.ind-pill{padding:4px 11px;border-radius:20px;border:1px solid var(--border2);background:transparent;font-size:11px;color:var(--muted2);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.ind-pill:hover{border-color:var(--sky-border);color:var(--sky2)}
+.ind-pill.on{background:var(--sky-dim);border-color:var(--sky-border);color:var(--sky2);font-weight:500}
+.type-chips{display:flex;flex-direction:column;gap:5px}
+.tychip{display:flex;align-items:center;gap:8px;padding:7px 11px;border-radius:8px;border:1px solid var(--border2);background:transparent;font-size:12px;color:var(--muted2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.tychip i{font-size:14px}
+.tychip:hover{border-color:var(--border2);color:var(--text)}
+.tychip.on{background:var(--sky-dim);border-color:var(--sky-border);color:var(--sky2)}
+.toggle-group{display:flex;flex-direction:column;gap:5px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.toggle-label{font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:6px}
+.toggle-label i{font-size:13px;color:var(--sky)}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--surface3);border-radius:20px;cursor:pointer;border:1px solid var(--border2);transition:.2s}
+.toggle-slider:before{content:'';position:absolute;height:14px;width:14px;left:2px;bottom:2px;background:var(--muted);border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--sky-dim);border-color:var(--sky-border)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(16px);background:var(--sky)}
+.admin-btn{width:100%;padding:9px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--muted2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;transition:all .15s;margin-bottom:.5rem}
+.admin-btn:hover{border-color:var(--sky-border);color:var(--sky2)}
+.admin-btn i{font-size:14px}
+.login-btn{width:100%;padding:7px 10px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--muted2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;font-family:'DM Sans',sans-serif;transition:all .15s;margin-top:8px}
+.login-btn:hover{border-color:var(--sky-border);color:var(--sky2)}
+.login-btn i{font-size:13px}
+.user-badge{display:flex;align-items:center;gap:6px;margin-top:8px;padding:6px 10px;background:var(--sky-dim);border:1px solid var(--sky-border);border-radius:8px;font-size:11px;color:var(--sky2)}
+.user-badge i{font-size:13px}
+.user-badge .logout-link{margin-left:auto;cursor:pointer;color:var(--muted);font-size:10px}
+.user-badge .logout-link:hover{color:var(--red)}
+.auth-error{background:var(--red-dim);border:1px solid var(--red-border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--red);margin-bottom:12px;display:none}
+.auth-error.show{display:block}
+.auth-info{background:var(--sky-dim);border:1px solid var(--sky-border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--sky2);margin-bottom:12px;display:none}
+.auth-info.show{display:block}
+.main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.results-count{font-size:13px;color:var(--muted)}
+.results-count strong{color:var(--text);font-weight:600}
+.sort-select{background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:6px 10px;font-size:12px;color:var(--muted2);outline:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+.cards-grid{display:flex;flex-direction:column;gap:10px}
+.biz-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
+.biz-card:hover{border-color:var(--border2);background:var(--surface2)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.biz-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--white);margin-bottom:3px;line-height:1.3}
+.biz-meta{font-size:12px;color:var(--muted2);line-height:1.5}
+.biz-price{font-size:16px;font-weight:600;color:var(--sky2);white-space:nowrap}
+.pill-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.tp{font-size:10px;padding:2px 9px;border-radius:20px;font-weight:600;border:1px solid;letter-spacing:0.2px;white-space:nowrap}
+.tp-sale{background:var(--green-dim);border-color:var(--green-border);color:var(--green)}
+.tp-tresp{background:var(--red-dim);border-color:var(--red-border);color:var(--red)}
+.tp-fran{background:var(--amber-dim);border-color:var(--amber-border);color:var(--amber)}
+.tp-visa{background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.25);color:var(--sky2)}
+.tp-running{background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.25);color:var(--green)}
+.tp-idle{background:rgba(156,163,175,0.08);border-color:rgba(156,163,175,0.25);color:#9ca3af}
+.ind-tag{font-size:10px;padding:2px 9px;border-radius:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--muted2);font-weight:500}
+.card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border)}
+.foot-left{font-size:11px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.foot-left span{display:flex;align-items:center;gap:3px}
+.foot-left i{font-size:12px;color:var(--muted)}
+.prebook{background:var(--sky);color:#0a0a0a;border:none;border-radius:7px;padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0.3px;transition:background .15s;font-family:'DM Sans',sans-serif}
+.prebook:hover{background:var(--sky2)}
+.blur-wrap{filter:blur(5px);pointer-events:none;opacity:.4;user-select:none}
+.gate{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:1.5rem;text-align:center;margin:4px 0 10px}
+.gate-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--white);margin-bottom:6px}
+.gate-sub{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:1.1rem}
+.gate-btn{background:var(--sky);color:#0a0a0a;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-state i{font-size:40px;display:block;margin-bottom:12px;color:var(--border2)}
+.empty-state p{font-size:13px;margin-top:5px;color:var(--muted)}
+.loading-state{text-align:center;padding:3rem 1rem;color:var(--muted2)}
+.loading-state i{font-size:32px;display:block;margin-bottom:10px;color:var(--sky);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal-wrap.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:1.75rem;width:100%;max-width:480px;margin:auto}
+.modal h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;color:var(--white)}
+.modal-sub{font-size:13px;color:var(--muted2);margin-bottom:1.25rem;line-height:1.6}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--sky-border)}
+.field textarea{resize:vertical;min-height:80px}
+.field select option{background:var(--surface2)}
+.modal-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.m-pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);font-size:11px;color:var(--muted2);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.m-pill:hover{border-color:var(--sky-border);color:var(--sky2)}
+.m-pill.on{background:var(--sky-dim);border-color:var(--sky-border);color:var(--sky2);font-weight:500}
+.modal-btns{display:flex;gap:8px;margin-top:1.25rem}
+.btn-cancel{flex:1;padding:10px;background:transparent;border:1px solid var(--border2);border-radius:8px;color:var(--muted2);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .15s}
+.btn-cancel:hover{color:var(--text)}
+.btn-submit{flex:2;padding:10px;background:var(--sky);border:none;border-radius:8px;color:#0a0a0a;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s}
+.btn-submit:hover{background:var(--sky2)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.success-wrap{text-align:center;padding:.5rem 0}
+.success-wrap i{font-size:44px;color:var(--green);display:block;margin-bottom:12px}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:1rem}
+.photo-thumb{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;border:1px solid var(--border);cursor:pointer}
+.photo-count{font-size:11px;color:var(--muted);margin-bottom:6px}
+.photo-viewer{position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+.photo-viewer.open{display:flex}
+.photo-viewer img{max-width:90vw;max-height:75vh;object-fit:contain;border-radius:8px}
+.pv-nav{display:flex;gap:12px;align-items:center}
+.pv-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px}
+.pv-close{position:absolute;top:1.5rem;right:1.5rem;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:6px 12px;color:var(--text);cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif}
+.admin-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:150;overflow-y:auto;padding:2rem 1rem;backdrop-filter:blur(4px)}
+.admin-wrap.open{display:block}
+.admin-panel{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:1.75rem;max-width:700px;margin:auto}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.admin-header h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--white)}
+.admin-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem;max-height:300px;overflow-y:auto}
+.admin-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)}
+.admin-row-info{flex:1;min-width:0}
+.admin-row-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-row-meta{font-size:11px;color:var(--muted)}
+.admin-row-btns{display:flex;gap:6px;flex-shrink:0;margin-left:10px}
+.edit-btn,.del-btn{padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid}
+.edit-btn{background:transparent;border-color:var(--border2);color:var(--muted2)}
+.edit-btn:hover{border-color:var(--sky-border);color:var(--sky2)}
+.del-btn{background:transparent;border-color:var(--red-border);color:var(--red)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid .field{margin-bottom:0}
+.span-2{grid-column:span 2}
+.ind-select-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.ind-sel-pill{padding:4px 11px;border-radius:20px;border:1px solid var(--border2);font-size:11px;color:var(--muted2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.ind-sel-pill:hover{border-color:var(--sky-border);color:var(--sky2)}
+.ind-sel-pill.on{background:var(--sky-dim);border-color:var(--sky-border);color:var(--sky2);font-weight:500}
+.photo-upload-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
+.pu-slot{position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;border:1px dashed var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;font-size:10px;color:var(--muted);gap:3px;transition:border-color .15s}
+.pu-slot:hover{border-color:var(--sky-border)}
+.pu-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pu-slot .pu-rm{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.75);border:none;border-radius:4px;color:#fff;font-size:10px;cursor:pointer;padding:1px 5px;display:none}
+.pu-slot:hover .pu-rm{display:block}
+.pu-slot i{font-size:16px}
+.pu-slot .pu-prog{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--sky)}
+.running-row{display:flex;gap:8px;margin-top:5px}
+.run-opt{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border2);text-align:center;font-size:12px;color:var(--muted2);cursor:pointer;transition:all .15s}
+.run-opt.on{background:var(--sky-dim);border-color:var(--sky-border);color:var(--sky2)}
+.mob-topbar{display:none;background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 1rem;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.mob-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--white)}
+.mob-logo em{color:var(--sky);font-style:normal}
+.mob-filter-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted2);background:var(--surface2);border:1px solid var(--border2);border-radius:7px;padding:6px 12px;cursor:pointer}
+@media(max-width:768px){
+  .sidebar{display:none;position:fixed;inset:0;z-index:90;width:100%;height:100%;overflow-y:auto}
+  .sidebar.mob-open{display:block}
+  .mob-topbar{display:flex}
+  .main{padding:1rem}
+  .app-shell{flex-direction:column}
+  .form-grid{grid-template-columns:1fr}
+  .span-2{grid-column:span 1}
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark"><em>SUO</em>Biz</div>
+    <div class="logo-sub">European Business Market</div>
+    <div id="authArea">
+      <button class="login-btn" onclick="openUserLogin()"><i class="ti ti-user-circle"></i>User Login</button>
+    </div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="s-label">Search</div>
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <input type="text" id="searchQ" placeholder="Name, city, keyword…" oninput="go()"/>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="s-label">Price ceiling</div>
+    <div class="range-row">
+      <input type="range" min="0" max="100" value="100" step="1" id="priceSlider" oninput="updatePrice(this.value);go()"/>
+      <div class="range-val" id="priceVal">€50M</div>
+    </div>
+  </div>
+  <div class="sidebar-section">
+    <div class="s-label">Industry <span id="indCount" style="color:var(--sky);font-size:10px;margin-left:3px"></span></div>
+    <div class="ind-wrap" id="indWrap"></div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="s-label">Listing type</div>
+    <div class="type-chips">
+      <div class="tychip on" onclick="setType('all',this)"><i class="ti ti-layout-grid"></i>All types</div>
+      <div class="tychip" onclick="setType('sale',this)"><i class="ti ti-tag"></i>For sale</div>
+      <div class="tychip" onclick="setType('trespasse',this)"><i class="ti ti-transfer"></i>Trespasse</div>
+      <div class="tychip" onclick="setType('franchise',this)"><i class="ti ti-building-store"></i>Franchise</div>
+    </div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <div class="s-label">Special filters</div>
+    <div class="toggle-group">
+      <div class="toggle-row">
+        <div class="toggle-label"><i class="ti ti-passport"></i>Entrepreneur visa qualified</div>
+        <label class="toggle"><input type="checkbox" id="visaFilter" onchange="go()"/><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><i class="ti ti-activity"></i>Running businesses only</div>
+        <label class="toggle"><input type="checkbox" id="runningFilter" onchange="go()"/><span class="toggle-slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-label"><i class="ti ti-clock-pause"></i>Idle businesses only</div>
+        <label class="toggle"><input type="checkbox" id="idleFilter" onchange="go()"/><span class="toggle-slider"></span></label>
+      </div>
+    </div>
+  </div>
+  <div class="sidebar-divider"></div>
+  <div class="sidebar-section">
+    <button class="admin-btn" onclick="openAdminAuth()"><i class="ti ti-shield-lock"></i>Admin Panel</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="mob-topbar">
+    <div class="mob-logo"><em>SUO</em>Biz</div>
+    <div class="mob-filter-btn" onclick="document.getElementById('sidebar').classList.toggle('mob-open')"><i class="ti ti-adjustments-horizontal"></i>Filters</div>
+  </div>
+  <div class="main-header">
+    <div class="results-count" id="resultsCount"><strong>—</strong> listings</div>
+    <select class="sort-select" id="sortSel" onchange="go()">
+      <option value="default">Sort: Default</option>
+      <option value="price_asc">Price: Low → High</option>
+      <option value="price_desc">Price: High → Low</option>
+      <option value="est_asc">Oldest first</option>
+      <option value="est_desc">Newest first</option>
+    </select>
+  </div>
+  <div class="cards-grid" id="resultsArea">
+    <div class="loading-state"><i class="ti ti-loader-2"></i><div>Loading listings…</div></div>
+  </div>
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-wrap" id="modalWrap"><div class="modal" id="modalBox"></div></div>
+
+<!-- PHOTO VIEWER -->
+<div class="photo-viewer" id="photoViewer">
+  <button class="pv-close" onclick="closePhotoViewer()">✕ Close</button>
+  <img id="pvImg" src="" alt="Business photo"/>
+  <div class="pv-nav">
+    <button class="pv-btn" onclick="pvNav(-1)">← Prev</button>
+    <span id="pvCounter" style="font-size:12px;color:var(--muted)"></span>
+    <button class="pv-btn" onclick="pvNav(1)">Next →</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-wrap" id="adminWrap"><div class="admin-panel" id="adminPanel"></div></div>
+
+<!-- Supabase JS client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+'use strict';
+/* =================================================================
+   SUPABASE CLIENT
+================================================================= */
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* =================================================================
+   CONSTANTS
+================================================================= */
+const INDUSTRIES = ['Real estate','Food & beverage','Hospitality','Consulting','IT & software',
+  'Textiles','Machinery & spares','Apparel','Electronics','Furniture','Gas stations',
+  'Supermarkets','Retail','Logistics','Healthcare','Agriculture','Tourism','Finance',
+  'Manufacturing','Media','Construction','Energy'];
+
+const ADMIN_USER = 'SUOGLOBAL';
+const ADMIN_PASS = '3XTR3MELY_TOUGH_USERNAME&PASSWORD';
+
+/* =================================================================
+   STATE
+================================================================= */
+let LISTINGS       = [];
+let selInds        = new Set();
+let activeType     = 'all';
+let priceCeil      = 50000000;
+let currentUser    = null;   // Supabase user object when logged in
+let pvPhotos       = [];
+let pvIdx          = 0;
+let adminAuth      = false;
+let adminEditId    = null;
+let adminPhotos    = [];
+let pendingPhotoSlot = 0;
+
+/* =================================================================
+   HELPERS
+================================================================= */
+function fmt(n){
+  if(!n&&n!==0)return'—';
+  if(n>=1000000)return'€'+(n/1000000).toFixed(1).replace(/\.0$/,'')+'M';
+  if(n>=1000)return'€'+(n/1000).toFixed(0)+'K';
+  return'€'+n;
+}
+
+function visaOK(b){
+  return (b.price>80000)||(b.employment&&b.employment>5)||(b.arr&&b.arr>10000);
+}
+
+function typeClass(t){return t==='sale'?'tp-sale':t==='trespasse'?'tp-tresp':'tp-fran';}
+function typeLabel(t){return t==='sale'?'For sale':t==='trespasse'?'Trespasse':'Franchise';}
+
+function showModal(html){
+  document.getElementById('modalBox').innerHTML=html;
+  document.getElementById('modalWrap').classList.add('open');
+}
+function closeModal(){document.getElementById('modalWrap').classList.remove('open');}
+document.getElementById('modalWrap').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+function updatePrice(v){
+  const val=Math.round(50000+Math.pow(v/100,2.2)*(50000000-50000));
+  priceCeil=val;
+  document.getElementById('priceVal').textContent=fmt(val);
+}
+
+/* =================================================================
+   INDUSTRY PILLS
+================================================================= */
+function buildIndustryPills(){
+  const wrap=document.getElementById('indWrap');
+  wrap.innerHTML='';
+  INDUSTRIES.forEach(ind=>{
+    const d=document.createElement('div');
+    d.className='ind-pill';
+    d.textContent=ind;
+    d.onclick=()=>{
+      selInds.has(ind)?selInds.delete(ind):selInds.add(ind);
+      d.classList.toggle('on');
+      document.getElementById('indCount').textContent=selInds.size?`(${selInds.size})`:'';
+      go();
+    };
+    wrap.appendChild(d);
+  });
+}
+
+function setType(t,el){
+  activeType=t;
+  document.querySelectorAll('.tychip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  go();
+}
+
+/* =================================================================
+   FETCH LISTINGS FROM SUPABASE
+================================================================= */
+async function loadListings(){
+  document.getElementById('resultsArea').innerHTML=
+    `<div class="loading-state"><i class="ti ti-loader-2"></i><div>Loading listings…</div></div>`;
+  const {data,error}=await sb.from('listings').select('*').order('id',{ascending:true});
+  if(error){
+    document.getElementById('resultsArea').innerHTML=
+      `<div class="empty-state"><i class="ti ti-alert-circle"></i><div>Could not load listings.</div><p>${error.message}</p></div>`;
+    return;
+  }
+  LISTINGS=data||[];
+  go();
+}
+
+/* =================================================================
+   FILTER & SORT
+================================================================= */
+function getResults(){
+  const q=(document.getElementById('searchQ').value||'').toLowerCase().trim();
+  const visaOnly=document.getElementById('visaFilter').checked;
+  const runOnly =document.getElementById('runningFilter').checked;
+  const idleOnly=document.getElementById('idleFilter').checked;
+
+  let res=LISTINGS.filter(b=>{
+    if(activeType!=='all'&&b.type!==activeType)return false;
+    if(b.price>priceCeil)return false;
+    if(selInds.size&&!b.industries.some(i=>selInds.has(i)))return false;
+    if(visaOnly&&!visaOK(b))return false;
+    if(runOnly&&!b.running)return false;
+    if(idleOnly&&b.running)return false;
+    if(q){
+      const blob=(b.name+' '+b.nation+' '+b.city+' '+(b.desc||'')+' '+b.industries.join(' ')).toLowerCase();
+      if(!blob.includes(q))return false;
+    }
+    return true;
+  });
+
+  const sort=document.getElementById('sortSel').value;
+  if(sort==='price_asc') res.sort((a,b)=>a.price-b.price);
+  else if(sort==='price_desc') res.sort((a,b)=>b.price-a.price);
+  else if(sort==='est_asc') res.sort((a,b)=>(a.est||9999)-(b.est||9999));
+  else if(sort==='est_desc') res.sort((a,b)=>(b.est||0)-(a.est||0));
+  return res;
+}
+
+/* =================================================================
+   CARD HTML
+================================================================= */
+function cardHTML(b){
+  const indPills=(b.industries||[]).map(i=>`<span class="tp ind-tag">${i}</span>`).join('');
+  const visaBadge=visaOK(b)?`<span class="tp tp-visa"><i class="ti ti-passport" style="font-size:9px"></i> Entrepreneur visa qualified</span>`:'';
+  const statusBadge=b.running?`<span class="tp tp-running">Running</span>`:`<span class="tp tp-idle">Idle</span>`;
+  const stats=[];
+  if(b.rev)stats.push(`<span><i class="ti ti-chart-bar"></i>${b.rev}</span>`);
+  if(b.est)stats.push(`<span><i class="ti ti-calendar"></i>Est. ${b.est}</span>`);
+  if(b.employment)stats.push(`<span><i class="ti ti-users"></i>${b.employment} jobs</span>`);
+  if(b.city&&b.nation)stats.push(`<span><i class="ti ti-map-pin"></i>${b.city}, ${b.nation}</span>`);
+  const pc=(b.photos||[]).filter(Boolean).length;
+  if(pc)stats.push(`<span><i class="ti ti-photo"></i>${pc} photos</span>`);
+
+  return`<div class="biz-card" onclick="openCard(${b.id})">
+    <div class="card-head">
+      <div class="card-left">
+        <div class="biz-name">${b.name}</div>
+        <div class="biz-meta">${b.desc||''}</div>
+      </div>
+      <div class="biz-price">${fmt(b.price)}</div>
+    </div>
+    <div class="pill-row">
+      <span class="tp ${typeClass(b.type)}">${typeLabel(b.type)}</span>
+      ${statusBadge}${visaBadge}${indPills}
+    </div>
+    <div class="card-foot">
+      <div class="foot-left">${stats.join('')}</div>
+      <button class="prebook" onclick="event.stopPropagation();openPrebook(${b.id})">Pre-book</button>
+    </div>
+  </div>`;
+}
+
+/* =================================================================
+   RENDER
+================================================================= */
+function go(){
+  const results=getResults();
+  const loggedIn=!!currentUser;
+  document.getElementById('resultsCount').innerHTML=`<strong>${results.length}</strong> listing${results.length!==1?'s':''}`;
+
+  if(!results.length){
+    document.getElementById('resultsArea').innerHTML=
+      `<div class="empty-state"><i class="ti ti-building-off"></i><div style="font-size:14px;color:var(--muted2)">No listings match your filters.</div><p>Try adjusting the price ceiling or removing some filters.</p></div>`;
+    return;
+  }
+
+  let html='';
+  results.forEach((b,i)=>{
+    const locked=!loggedIn&&i>=5;
+    html+=locked?`<div class="blur-wrap">${cardHTML(b)}</div>`:cardHTML(b);
+    if(!loggedIn&&i===4&&results.length>5){
+      html+=`<div class="gate">
+        <div class="gate-title">Unlock all ${results.length} listings</div>
+        <div class="gate-sub">You've seen 5 businesses. Create a free account or log in to access every listing and pre-book directly.</div>
+        <button class="gate-btn" onclick="openRegister()">Create free account</button>
+        &nbsp;
+        <button class="gate-btn" style="background:transparent;border:1px solid var(--sky-border);color:var(--sky2);margin-top:8px" onclick="openUserLogin()">Log in</button>
+      </div>`;
+    }
+  });
+  document.getElementById('resultsArea').innerHTML=html;
+}
+
+/* =================================================================
+   OPEN CARD DETAIL
+================================================================= */
+function openCard(id){
+  const b=LISTINGS.find(x=>x.id===id);
+  if(!b)return;
+  const stats=[];
+  if(b.rev)stats.push(['Revenue',b.rev]);
+  if(b.arr)stats.push(['ARR',fmt(b.arr)]);
+  if(b.est)stats.push(['Established',b.est]);
+  if(b.staff)stats.push(['Staff',b.staff+' people']);
+  if(b.employment)stats.push(['Employment scope',b.employment+' jobs possible']);
+  if(b.sqm)stats.push(['Size',(b.sqm).toLocaleString()+' sqm']);
+  if(b.rooms)stats.push(['Rooms',b.rooms]);
+  if(b.stores)stats.push(['Stores',b.stores]);
+  if(b.ha)stats.push(['Land',b.ha+' ha']);
+  if(b.outlets)stats.push(['Outlets',b.outlets]);
+  const rows=stats.map(([k,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--muted);font-size:12px">${k}</span>
+      <span style="font-size:12px;font-weight:600">${v}</span>
+    </div>`).join('');
+
+  const photos=(b.photos||[]).filter(Boolean);
+  let photoHTML='';
+  if(photos.length){
+    photoHTML=`<div class="photo-count">${photos.length} photo${photos.length!==1?'s':''}</div>
+    <div class="photo-grid">
+      ${photos.map((p,i)=>`<img class="photo-thumb" src="${p}" alt="Photo ${i+1}" onclick="openPhotoViewer(${b.id},${i})" loading="lazy"/>`).join('')}
+    </div>`;
+  }
+
+  showModal(`
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:1rem">
+      <div>
+        <h3>${b.name}</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px">${b.city}, ${b.nation}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:700;color:var(--sky2)">${fmt(b.price)}</div>
+        ${visaOK(b)?`<div style="font-size:10px;color:var(--sky2);margin-top:2px">✓ Entrepreneur visa qualified</div>`:''}
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem">
+      <span class="tp ${typeClass(b.type)}">${typeLabel(b.type)}</span>
+      ${b.running?'<span class="tp tp-running">Running</span>':'<span class="tp tp-idle">Idle</span>'}
+      ${(b.industries||[]).map(i=>`<span class="tp ind-tag">${i}</span>`).join('')}
+    </div>
+    <p style="font-size:13px;color:var(--muted2);margin-bottom:1rem;line-height:1.6">${b.desc||''}</p>
+    ${photoHTML}
+    <div style="margin-bottom:1.1rem">${rows}</div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Close</button>
+      <button class="btn-submit" onclick="closeModal();openPrebook(${b.id})">Pre-book this listing</button>
+    </div>`);
+}
+
+/* =================================================================
+   PRE-BOOK
+================================================================= */
+function openPrebook(id){
+  const b=LISTINGS.find(x=>x.id===id);
+  showModal(`
+    <h3>Pre-book: ${b.name}</h3>
+    <div class="modal-sub">${b.city}, ${b.nation} · ${fmt(b.price)}</div>
+    <div class="field"><label>Your name</label><input type="text" id="pb_name" placeholder="Full name"/></div>
+    <div class="field"><label>Email</label><input type="email" id="pb_email" placeholder="you@email.com"/></div>
+    <div class="field"><label>Mobile</label><input type="tel" id="pb_mobile" placeholder="+XX XXX XXX XXXX"/></div>
+    <div class="field"><label>Message (optional)</label><textarea id="pb_msg" placeholder="Tell the seller your background or questions…"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit" id="pbBtn" onclick="submitPrebook(${b.id},'${b.name.replace(/'/g,"\\'")}')">Send pre-booking</button>
+    </div>`);
+}
+
+async function submitPrebook(id,name){
+  const pName=document.getElementById('pb_name').value.trim();
+  const pEmail=document.getElementById('pb_email').value.trim();
+  const pMobile=document.getElementById('pb_mobile').value.trim();
+  const pMsg=document.getElementById('pb_msg').value.trim();
+  if(!pName||!pEmail){alert('Please enter your name and email.');return;}
+
+  const btn=document.getElementById('pbBtn');
+  btn.disabled=true;btn.textContent='Sending…';
+
+  await callEmailFunction({
+    to:'suoglobal@gmail.com',
+    subject:`SUOBiz Pre-booking: ${name}`,
+    html:`<h2>New pre-booking request</h2>
+      <p><b>Listing:</b> ${name} (ID ${id})</p>
+      <p><b>Name:</b> ${pName}</p>
+      <p><b>Email:</b> ${pEmail}</p>
+      <p><b>Mobile:</b> ${pMobile||'Not provided'}</p>
+      <p><b>Message:</b> ${pMsg||'None'}</p>`
+  });
+
+  showModal(`<div class="success-wrap"><i class="ti ti-circle-check"></i>
+    <h3>Pre-booking sent</h3>
+    <p style="font-size:13px;color:var(--muted2);margin:8px 0 1.25rem;line-height:1.6">The seller's advisor will contact you within 48 hours.</p>
+    <button class="btn-submit" style="width:100%" onclick="closeModal()">Back to listings</button></div>`);
+}
+
+/* =================================================================
+   REGISTER
+================================================================= */
+function openRegister(){
+  const pills=INDUSTRIES.map(i=>`<div class="m-pill" onclick="this.classList.toggle('on')">${i}</div>`).join('');
+  showModal(`
+    <h3>Create your free account</h3>
+    <div class="modal-sub">Access all listings. Your login credentials will be emailed to you.</div>
+    <div class="auth-error" id="regErr"></div>
+    <div class="field"><label>Full name</label><input type="text" id="reg_name" placeholder="Your name"/></div>
+    <div class="field"><label>Email</label><input type="email" id="reg_email" placeholder="you@email.com"/></div>
+    <div class="field"><label>Mobile</label><input type="tel" id="reg_mobile" placeholder="+XX XXX XXX XXXX"/></div>
+    <div class="field"><label>Industries I'm interested in</label><div class="modal-pills">${pills}</div></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit" id="regBtn" onclick="completeRegister()">Create account</button>
+    </div>`);
+}
+
+async function completeRegister(){
+  const name  = document.getElementById('reg_name').value.trim();
+  const email = document.getElementById('reg_email').value.trim();
+  const mobile= document.getElementById('reg_mobile').value.trim();
+  const ints  = [...document.querySelectorAll('#modalBox .m-pill.on')].map(e=>e.textContent).join(', ')||'Not specified';
+  const errEl = document.getElementById('regErr');
+  errEl.className='auth-error';errEl.textContent='';
+
+  if(!name||!email){errEl.className='auth-error show';errEl.textContent='Please enter your name and email.';return;}
+
+  const btn=document.getElementById('regBtn');
+  btn.disabled=true;btn.textContent='Creating account…';
+
+  // Generate 6-char alphanumeric password
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let pw='';for(let i=0;i<6;i++)pw+=chars[Math.floor(Math.random()*chars.length)];
+
+  // 1. Create Supabase auth user (email = username, generated password)
+  const {data:signUpData, error:signUpErr} = await sb.auth.signUp({email, password:pw,
+    options:{data:{full_name:name, mobile, industries:ints}}});
+
+  if(signUpErr&&!signUpErr.message.includes('already registered')){
+    errEl.className='auth-error show';
+    errEl.textContent=signUpErr.message;
+    btn.disabled=false;btn.textContent='Create account';
+    return;
+  }
+
+  // 2. Store registration in 'registrations' table for admin records
+  await sb.from('registrations').insert({name,email,mobile,industries:ints,created_at:new Date().toISOString()});
+
+  // 3. Send email to admin
+  await callEmailFunction({
+    to:'suoglobal@gmail.com',
+    subject:'SUOBiz — New User Registration',
+    html:`<h2>New registration on SUOBiz</h2>
+      <table style="font-family:sans-serif;font-size:14px;border-collapse:collapse">
+        <tr><td style="padding:4px 12px 4px 0;color:#888">Full Name</td><td><b>${name}</b></td></tr>
+        <tr><td style="padding:4px 12px 4px 0;color:#888">Email (username)</td><td><b>${email}</b></td></tr>
+        <tr><td style="padding:4px 12px 4px 0;color:#888">Mobile</td><td>${mobile||'Not provided'}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;color:#888">Interests</td><td>${ints}</td></tr>
+        <tr><td style="padding:4px 12px 4px 0;color:#888">Generated Password</td><td><b style="font-size:18px;letter-spacing:2px">${pw}</b></td></tr>
+      </table>
+      <p style="margin-top:16px;color:#888;font-size:12px">Please forward the credentials to the user.</p>`
+  });
+
+  // 4. Send welcome email to user with their credentials
+  await callEmailFunction({
+    to: email,
+    subject:'Your SUOBiz login credentials',
+    html:`<h2>Welcome to SUOBiz, ${name}!</h2>
+      <p>Your account has been created. Here are your login details:</p>
+      <table style="font-family:sans-serif;font-size:14px;border-collapse:collapse;background:#f9f9f9;padding:12px;border-radius:8px">
+        <tr><td style="padding:6px 16px 6px 0;color:#555">Username</td><td><b>${email}</b></td></tr>
+        <tr><td style="padding:6px 16px 6px 0;color:#555">Password</td><td><b style="font-size:20px;letter-spacing:3px">${pw}</b></td></tr>
+      </table>
+      <p style="margin-top:16px;color:#555">Visit <a href="${window.location.href}">SUOBiz</a> and use these to log in and access all listings.</p>`
+  });
+
+  showModal(`<div class="success-wrap"><i class="ti ti-circle-check"></i>
+    <h3>Account created!</h3>
+    <p style="font-size:13px;color:var(--muted2);margin:8px 0 1.25rem;line-height:1.6">
+      Your login credentials have been sent to <b>${email}</b>.<br>
+      Your <b>username is your email address</b>. Check your inbox for your password.
+    </p>
+    <button class="btn-submit" style="width:100%" onclick="closeModal();openUserLogin()">Log in now</button></div>`);
+}
+
+/* =================================================================
+   USER LOGIN
+================================================================= */
+function openUserLogin(){
+  showModal(`
+    <h3>User Login</h3>
+    <div class="modal-sub">Enter the credentials sent to your email after registration.</div>
+    <div class="auth-error" id="loginErr"></div>
+    <div class="field"><label>Email (username)</label><input type="email" id="ul_email" placeholder="you@email.com" autocomplete="username"/></div>
+    <div class="field"><label>Password</label><input type="password" id="ul_pass" placeholder="6-character password" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitLogin()"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit" id="loginBtn" onclick="submitLogin()">Log in</button>
+    </div>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">
+      No account? <span style="color:var(--sky2);cursor:pointer" onclick="openRegister()">Register free</span>
+    </p>`);
+}
+
+async function submitLogin(){
+  const email=document.getElementById('ul_email').value.trim();
+  const pass =document.getElementById('ul_pass').value.trim();
+  const errEl=document.getElementById('loginErr');
+  errEl.className='auth-error';errEl.textContent='';
+
+  if(!email||!pass){errEl.className='auth-error show';errEl.textContent='Please enter your email and password.';return;}
+
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Logging in…';
+
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){
+    errEl.className='auth-error show';
+    errEl.textContent='Incorrect email or password. Please try again.';
+    btn.disabled=false;btn.textContent='Log in';
+    return;
+  }
+  currentUser=data.user;
+  updateAuthUI();
+  closeModal();
+  go();
+}
+
+async function logout(){
+  await sb.auth.signOut();
+  currentUser=null;
+  updateAuthUI();
+  go();
+}
+
+function updateAuthUI(){
+  const area=document.getElementById('authArea');
+  if(currentUser){
+    const name=currentUser.user_metadata?.full_name||currentUser.email;
+    area.innerHTML=`<div class="user-badge">
+      <i class="ti ti-user-check"></i>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">${name}</span>
+      <span class="logout-link" onclick="logout()">Log out</span>
+    </div>`;
+  } else {
+    area.innerHTML=`<button class="login-btn" onclick="openUserLogin()"><i class="ti ti-user-circle"></i>User Login</button>`;
+  }
+}
+
+/* =================================================================
+   ADMIN AUTH
+================================================================= */
+function openAdminAuth(){
+  if(adminAuth){openAdmin();return;}
+  showModal(`
+    <h3><i class="ti ti-shield-lock" style="color:var(--sky);font-size:16px;vertical-align:-2px;margin-right:6px"></i>Admin Access</h3>
+    <div class="modal-sub">Restricted to authorised administrators only.</div>
+    <div class="auth-error" id="adminErr"></div>
+    <div class="field"><label>Admin username</label><input type="text" id="aa_user" autocomplete="off"/></div>
+    <div class="field"><label>Admin password</label><input type="password" id="aa_pass" autocomplete="off" onkeydown="if(event.key==='Enter')submitAdminAuth()"/></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-submit" onclick="submitAdminAuth()">Access Panel</button>
+    </div>`);
+}
+
+function submitAdminAuth(){
+  if(document.getElementById('aa_user').value===ADMIN_USER&&
+     document.getElementById('aa_pass').value===ADMIN_PASS){
+    adminAuth=true;closeModal();openAdmin();
+  } else {
+    const e=document.getElementById('adminErr');
+    e.className='auth-error show';e.textContent='Incorrect credentials. Access denied.';
+  }
+}
+
+/* =================================================================
+   ADMIN PANEL
+================================================================= */
+function openAdmin(){
+  adminEditId=null;adminPhotos=[];
+  renderAdminPanel();
+  document.getElementById('adminWrap').classList.add('open');
+}
+function closeAdmin(){document.getElementById('adminWrap').classList.remove('open');}
+
+function renderAdminPanel(){
+  const listHTML=LISTINGS.map(b=>`
+    <div class="admin-row">
+      <div class="admin-row-info">
+        <div class="admin-row-name">${b.name}</div>
+        <div class="admin-row-meta">${b.city}, ${b.nation} · ${fmt(b.price)}</div>
+      </div>
+      <div class="admin-row-btns">
+        <button class="edit-btn" onclick="adminEdit(${b.id})"><i class="ti ti-pencil"></i> Edit</button>
+        <button class="del-btn" onclick="adminDelete(${b.id})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('adminPanel').innerHTML=`
+    <div class="admin-header">
+      <h2><i class="ti ti-shield-lock" style="color:var(--sky);font-size:18px;vertical-align:-2px"></i> Admin Panel</h2>
+      <button class="btn-cancel" style="padding:6px 14px;font-size:12px" onclick="closeAdmin()">✕ Close</button>
+    </div>
+    <div class="s-label" style="margin-bottom:8px">All listings (${LISTINGS.length})</div>
+    <div class="admin-list">${listHTML||'<div style="color:var(--muted);font-size:13px;padding:10px">No listings yet.</div>'}</div>
+    <div style="border-top:1px solid var(--border);padding-top:1.25rem;margin-top:.5rem">
+      <div class="s-label" style="margin-bottom:12px">Add new listing</div>
+      ${adminFormHTML(null)}
+    </div>`;
+}
+
+function adminEdit(id){
+  adminEditId=id;
+  const b=LISTINGS.find(x=>x.id===id);
+  adminPhotos=[...(b.photos||[])];
+  document.getElementById('adminPanel').innerHTML=`
+    <div class="admin-header">
+      <h2>Edit Listing</h2>
+      <button class="btn-cancel" style="padding:6px 14px;font-size:12px" onclick="renderAdminPanel()">← Back</button>
+    </div>
+    ${adminFormHTML(b)}`;
+}
+
+async function adminDelete(id){
+  if(!confirm('Delete this listing? This cannot be undone.'))return;
+  const {error}=await sb.from('listings').delete().eq('id',id);
+  if(error){alert('Delete failed: '+error.message);return;}
+  LISTINGS=LISTINGS.filter(x=>x.id!==id);
+  renderAdminPanel();go();
+}
+
+function adminFormHTML(b){
+  const isEdit=!!b;
+  const indPills=INDUSTRIES.map(i=>{
+    const on=isEdit&&(b.industries||[]).includes(i)?'on':'';
+    return`<div class="ind-sel-pill ${on}" onclick="this.classList.toggle('on')" data-ind="${i}">${i}</div>`;
+  }).join('');
+  const runVal=isEdit?(b.running?'running':'idle'):'running';
+  const cp=isEdit?(b.photos||[]).filter(Boolean):[];
+  let photoSlots='';
+  for(let i=0;i<10;i++){
+    photoSlots+=cp[i]
+      ?`<div class="pu-slot" id="pu_${i}"><img src="${cp[i]}" alt=""/><button class="pu-rm" onclick="removeAdminPhoto(${i})">✕</button></div>`
+      :`<div class="pu-slot" onclick="triggerPhotoUpload(${i})" id="pu_${i}"><i class="ti ti-plus"></i><span>Add</span></div>`;
+  }
+  return`
+    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)"/>
+    <div class="form-grid">
+      <div class="field span-2"><label>Business name</label><input type="text" id="f_name" value="${isEdit?b.name:''}" placeholder="e.g. Paris Rooftop Bistro"/></div>
+      <div class="field"><label>Country</label><input type="text" id="f_nation" value="${isEdit?b.nation:''}" placeholder="e.g. France"/></div>
+      <div class="field"><label>City</label><input type="text" id="f_city" value="${isEdit?b.city:''}" placeholder="e.g. Paris"/></div>
+      <div class="field"><label>Asking price (€)</label><input type="number" id="f_price" value="${isEdit?b.price:''}" placeholder="e.g. 850000"/></div>
+      <div class="field"><label>Annual revenue</label><input type="text" id="f_rev" value="${isEdit?b.rev||'':''}" placeholder="e.g. €420K/yr"/></div>
+      <div class="field"><label>ARR (€) — Annual Recurring Revenue</label><input type="number" id="f_arr" value="${isEdit?b.arr||'':''}" placeholder="e.g. 85000" min="0"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">Visa badge: price &gt;€80K or employment &gt;5 or ARR &gt;€10K</div>
+      </div>
+      <div class="field"><label>Year established</label><input type="number" id="f_est" value="${isEdit?b.est||'':''}" placeholder="e.g. 2008"/></div>
+      <div class="field"><label>Employment scope (jobs possible)</label><input type="number" id="f_employment" value="${isEdit?b.employment||'':''}" placeholder="e.g. 12" min="0"/></div>
+      <div class="field"><label>Listing type</label>
+        <select id="f_type">
+          <option value="sale" ${isEdit&&b.type==='sale'?'selected':''}>For sale</option>
+          <option value="trespasse" ${isEdit&&b.type==='trespasse'?'selected':''}>Trespasse</option>
+          <option value="franchise" ${isEdit&&b.type==='franchise'?'selected':''}>Franchise</option>
+        </select>
+      </div>
+      <div class="field span-2"><label>Description</label><textarea id="f_desc" placeholder="Brief description…">${isEdit?b.desc||'':''}</textarea></div>
+      <div class="field span-2">
+        <label>Status</label>
+        <div class="running-row">
+          <div class="run-opt ${runVal==='running'?'on':''}" id="run_running" onclick="selectRunning('running')"><i class="ti ti-activity"></i> Running</div>
+          <div class="run-opt ${runVal==='idle'?'on':''}" id="run_idle" onclick="selectRunning('idle')"><i class="ti ti-clock-pause"></i> Idle</div>
+        </div>
+      </div>
+      <div class="field span-2">
+        <label>Industries (select all that apply)</label>
+        <div class="ind-select-grid">${indPills}</div>
+      </div>
+      <div class="field span-2">
+        <label>Photos (up to 10 — stored persistently in Supabase)</label>
+        <div class="photo-upload-grid">${photoSlots}</div>
+      </div>
+    </div>
+    <div class="modal-btns" style="margin-top:1rem">
+      <button class="btn-cancel" onclick="${isEdit?'renderAdminPanel()':'closeAdmin()'}">Cancel</button>
+      <button class="btn-submit" id="saveBtn" onclick="adminSave(${isEdit?b.id:'null'})">${isEdit?'Save changes':'Add listing'}</button>
+    </div>`;
+}
+
+function triggerPhotoUpload(slot){
+  pendingPhotoSlot=slot;
+  document.getElementById('photoInput').value='';
+  document.getElementById('photoInput').click();
+}
+
+async function handlePhotoUpload(input){
+  const file=input.files[0];if(!file)return;
+  const slot=document.getElementById(`pu_${pendingPhotoSlot}`);
+  slot.innerHTML=`<div class="pu-prog"><i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i></div>`;
+
+  // Upload to Supabase Storage bucket "business-photos"
+  const filename=`listing_${Date.now()}_${pendingPhotoSlot}_${file.name.replace(/[^a-zA-Z0-9.]/g,'_')}`;
+  const {data,error}=await sb.storage.from('business-photos').upload(filename,file,{upsert:true});
+
+  if(error){
+    alert('Photo upload failed: '+error.message);
+    slot.innerHTML=`<div class="pu-slot" onclick="triggerPhotoUpload(${pendingPhotoSlot})"><i class="ti ti-plus"></i><span>Retry</span></div>`;
+    return;
+  }
+
+  const {data:{publicUrl}}=sb.storage.from('business-photos').getPublicUrl(filename);
+  adminPhotos[pendingPhotoSlot]=publicUrl;
+
+  slot.innerHTML=`<img src="${publicUrl}" alt=""/><button class="pu-rm" onclick="removeAdminPhoto(${pendingPhotoSlot})">✕</button>`;
+  slot.onclick=null;
+}
+
+function removeAdminPhoto(slot){
+  adminPhotos[slot]=null;
+  const el=document.getElementById(`pu_${slot}`);
+  if(el){el.innerHTML=`<i class="ti ti-plus"></i><span>Add</span>`;el.onclick=()=>triggerPhotoUpload(slot);}
+}
+
+function selectRunning(val){
+  document.getElementById('run_running').classList.toggle('on',val==='running');
+  document.getElementById('run_idle').classList.toggle('on',val==='idle');
+}
+
+async function adminSave(id){
+  const name      =document.getElementById('f_name').value.trim();
+  const nation    =document.getElementById('f_nation').value.trim();
+  const city      =document.getElementById('f_city').value.trim();
+  const price     =parseFloat(document.getElementById('f_price').value)||0;
+  const rev       =document.getElementById('f_rev').value.trim();
+  const arr       =parseFloat(document.getElementById('f_arr').value)||null;
+  const est       =parseInt(document.getElementById('f_est').value)||null;
+  const employment=parseInt(document.getElementById('f_employment').value)||null;
+  const type      =document.getElementById('f_type').value;
+  const desc      =document.getElementById('f_desc').value.trim();
+  const running   =document.getElementById('run_running').classList.contains('on');
+  const industries=[...document.querySelectorAll('.ind-sel-pill.on')].map(el=>el.dataset.ind);
+  const photos    =adminPhotos.filter(Boolean);
+
+  if(!name||!nation||!city||!price){alert('Please fill in Name, Country, City, and Price.');return;}
+  if(!industries.length){alert('Please select at least one industry.');return;}
+
+  const btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='Saving…';
+
+  const record={name,nation,city,price,rev,arr,est,employment,type,desc,running,industries,photos};
+
+  let error;
+  if(id){
+    ({error}=await sb.from('listings').update(record).eq('id',id));
+    if(!error){const i=LISTINGS.findIndex(x=>x.id===id);if(i>-1)LISTINGS[i]={...LISTINGS[i],...record};}
+  } else {
+    const {data,error:e}=await sb.from('listings').insert(record).select().single();
+    error=e;
+    if(!error&&data)LISTINGS.push(data);
+  }
+
+  if(error){alert('Save failed: '+error.message);btn.disabled=false;btn.textContent=id?'Save changes':'Add listing';return;}
+
+  adminPhotos=[];
+  renderAdminPanel();go();
+}
+
+/* =================================================================
+   PHOTO VIEWER
+================================================================= */
+function openPhotoViewer(id,idx){
+  const b=LISTINGS.find(x=>x.id===id);
+  pvPhotos=(b.photos||[]).filter(Boolean);pvIdx=idx;renderPV();
+  document.getElementById('photoViewer').classList.add('open');
+}
+function renderPV(){
+  if(!pvPhotos.length)return;
+  document.getElementById('pvImg').src=pvPhotos[pvIdx];
+  document.getElementById('pvCounter').textContent=`${pvIdx+1} / ${pvPhotos.length}`;
+}
+function pvNav(dir){pvIdx=(pvIdx+dir+pvPhotos.length)%pvPhotos.length;renderPV();}
+function closePhotoViewer(){document.getElementById('photoViewer').classList.remove('open');}
+document.getElementById('photoViewer').addEventListener('click',e=>{if(e.target===e.currentTarget)closePhotoViewer();});
+
+/* =================================================================
+   EMAIL HELPER (calls Supabase Edge Function)
+================================================================= */
+async function callEmailFunction(payload){
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    const headers={'Content-Type':'application/json'};
+    if(session?.access_token)headers['Authorization']='Bearer '+session.access_token;
+    await fetch(RESEND_FUNCTION,{method:'POST',headers,body:JSON.stringify(payload)});
+  }catch(e){console.warn('Email send failed:',e);}
+}
+
+/* =================================================================
+   SUPABASE AUTH LISTENER (restore session on page load)
+================================================================= */
+sb.auth.onAuthStateChange((event,session)=>{
+  currentUser=session?.user||null;
+  updateAuthUI();
+  go();
+});
+
+/* =================================================================
+   INIT
+================================================================= */
+buildIndustryPills();
+updatePrice(100);
+loadListings();
+</script>
+</body>
+</html>
