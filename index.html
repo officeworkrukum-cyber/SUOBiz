@@ -13,9 +13,9 @@
   ⚙️  CONFIGURATION — fill these in during setup (Step 3 of guide)
 ============================================================ -->
 <script>
-  const SUPABASE_URL    = 'https://vowvvfcntmnsjcjtrvwl.supabase.co';       // e.g. https://abcdefgh.supabase.co
+  const SUPABASE_URL    = 'https://vowvvfcntmnsjcjtrvwl.supabase.co';               // e.g. https://abcdefgh.supabase.co
   const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvd3Z2ZmNudG1uc2pjanRydndsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0Nzk3NjYsImV4cCI6MjA5NDA1NTc2Nn0.aCBLGnNQfd3yZ9Nj-KrzrNEdKEBu2WxK7MUMdkgmOc0';  // long string starting with eyJ…
-  const RESEND_FUNCTION = SUPABASE_URL + '/functions/v1/send-email';
+  // Email is handled entirely by Supabase's built-in system (magic link / OTP)
 </script>
 
 <style>
@@ -596,15 +596,11 @@ async function submitPrebook(id,name){
   const btn=document.getElementById('pbBtn');
   btn.disabled=true;btn.textContent='Sending…';
 
-  await callEmailFunction({
-    to:'suoglobal@gmail.com',
-    subject:`SUOBiz Pre-booking: ${name}`,
-    html:`<h2>New pre-booking request</h2>
-      <p><b>Listing:</b> ${name} (ID ${id})</p>
-      <p><b>Name:</b> ${pName}</p>
-      <p><b>Email:</b> ${pEmail}</p>
-      <p><b>Mobile:</b> ${pMobile||'Not provided'}</p>
-      <p><b>Message:</b> ${pMsg||'None'}</p>`
+  // Store pre-booking enquiry in Supabase so admin can review in dashboard
+  await sb.from('registrations').insert({
+    name:pName, email:pEmail, mobile:pMobile,
+    industries:`PRE-BOOKING: ${name} (ID ${id}) — ${pMsg||'No message'}`,
+    created_at:new Date().toISOString()
   });
 
   showModal(`<div class="success-wrap"><i class="ti ti-circle-check"></i>
@@ -620,7 +616,7 @@ function openRegister(){
   const pills=INDUSTRIES.map(i=>`<div class="m-pill" onclick="this.classList.toggle('on')">${i}</div>`).join('');
   showModal(`
     <h3>Create your free account</h3>
-    <div class="modal-sub">Access all listings. Your login credentials will be emailed to you.</div>
+    <div class="modal-sub">Access all listings. We'll email you a magic link to sign in — no password needed.</div>
     <div class="auth-error" id="regErr"></div>
     <div class="field"><label>Full name</label><input type="text" id="reg_name" placeholder="Your name"/></div>
     <div class="field"><label>Email</label><input type="email" id="reg_email" placeholder="you@email.com"/></div>
@@ -645,15 +641,17 @@ async function completeRegister(){
   const btn=document.getElementById('regBtn');
   btn.disabled=true;btn.textContent='Creating account…';
 
-  // Generate 6-char alphanumeric password
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-  let pw='';for(let i=0;i<6;i++)pw+=chars[Math.floor(Math.random()*chars.length)];
+  // 1. Sign up via Supabase OTP (magic link) — no password required
+  //    emailRedirectTo sends them back to this page after clicking the link
+  const {error:signUpErr} = await sb.auth.signInWithOtp({
+    email,
+    options:{
+      emailRedirectTo: window.location.href.split('#')[0],
+      data:{full_name:name, mobile, industries:ints}
+    }
+  });
 
-  // 1. Create Supabase auth user (email = username, generated password)
-  const {data:signUpData, error:signUpErr} = await sb.auth.signUp({email, password:pw,
-    options:{data:{full_name:name, mobile, industries:ints}}});
-
-  if(signUpErr&&!signUpErr.message.includes('already registered')){
+  if(signUpErr){
     errEl.className='auth-error show';
     errEl.textContent=signUpErr.message;
     btn.disabled=false;btn.textContent='Create account';
@@ -663,41 +661,13 @@ async function completeRegister(){
   // 2. Store registration in 'registrations' table for admin records
   await sb.from('registrations').insert({name,email,mobile,industries:ints,created_at:new Date().toISOString()});
 
-  // 3. Send email to admin
-  await callEmailFunction({
-    to:'suoglobal@gmail.com',
-    subject:'SUOBiz — New User Registration',
-    html:`<h2>New registration on SUOBiz</h2>
-      <table style="font-family:sans-serif;font-size:14px;border-collapse:collapse">
-        <tr><td style="padding:4px 12px 4px 0;color:#888">Full Name</td><td><b>${name}</b></td></tr>
-        <tr><td style="padding:4px 12px 4px 0;color:#888">Email (username)</td><td><b>${email}</b></td></tr>
-        <tr><td style="padding:4px 12px 4px 0;color:#888">Mobile</td><td>${mobile||'Not provided'}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;color:#888">Interests</td><td>${ints}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;color:#888">Generated Password</td><td><b style="font-size:18px;letter-spacing:2px">${pw}</b></td></tr>
-      </table>
-      <p style="margin-top:16px;color:#888;font-size:12px">Please forward the credentials to the user.</p>`
-  });
-
-  // 4. Send welcome email to user with their credentials
-  await callEmailFunction({
-    to: email,
-    subject:'Your SUOBiz login credentials',
-    html:`<h2>Welcome to SUOBiz, ${name}!</h2>
-      <p>Your account has been created. Here are your login details:</p>
-      <table style="font-family:sans-serif;font-size:14px;border-collapse:collapse;background:#f9f9f9;padding:12px;border-radius:8px">
-        <tr><td style="padding:6px 16px 6px 0;color:#555">Username</td><td><b>${email}</b></td></tr>
-        <tr><td style="padding:6px 16px 6px 0;color:#555">Password</td><td><b style="font-size:20px;letter-spacing:3px">${pw}</b></td></tr>
-      </table>
-      <p style="margin-top:16px;color:#555">Visit <a href="${window.location.href}">SUOBiz</a> and use these to log in and access all listings.</p>`
-  });
-
   showModal(`<div class="success-wrap"><i class="ti ti-circle-check"></i>
-    <h3>Account created!</h3>
+    <h3>Check your inbox!</h3>
     <p style="font-size:13px;color:var(--muted2);margin:8px 0 1.25rem;line-height:1.6">
-      Your login credentials have been sent to <b>${email}</b>.<br>
-      Your <b>username is your email address</b>. Check your inbox for your password.
+      We've sent a magic link to <b>${email}</b>.<br>
+      Click it to instantly access all listings — no password needed.
     </p>
-    <button class="btn-submit" style="width:100%" onclick="closeModal();openUserLogin()">Log in now</button></div>`);
+    <button class="btn-submit" style="width:100%" onclick="closeModal()">Got it</button></div>`);
 }
 
 /* =================================================================
@@ -705,14 +675,14 @@ async function completeRegister(){
 ================================================================= */
 function openUserLogin(){
   showModal(`
-    <h3>User Login</h3>
-    <div class="modal-sub">Enter the credentials sent to your email after registration.</div>
+    <h3>Log in to SUOBiz</h3>
+    <div class="modal-sub">Enter your email and we'll send you a magic link to sign in instantly.</div>
     <div class="auth-error" id="loginErr"></div>
-    <div class="field"><label>Email (username)</label><input type="email" id="ul_email" placeholder="you@email.com" autocomplete="username"/></div>
-    <div class="field"><label>Password</label><input type="password" id="ul_pass" placeholder="6-character password" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitLogin()"/></div>
+    <div class="auth-info" id="loginInfo"></div>
+    <div class="field"><label>Email address</label><input type="email" id="ul_email" placeholder="you@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')submitLogin()"/></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-submit" id="loginBtn" onclick="submitLogin()">Log in</button>
+      <button class="btn-submit" id="loginBtn" onclick="submitLogin()">Send magic link</button>
     </div>
     <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">
       No account? <span style="color:var(--sky2);cursor:pointer" onclick="openRegister()">Register free</span>
@@ -721,26 +691,31 @@ function openUserLogin(){
 
 async function submitLogin(){
   const email=document.getElementById('ul_email').value.trim();
-  const pass =document.getElementById('ul_pass').value.trim();
   const errEl=document.getElementById('loginErr');
+  const infoEl=document.getElementById('loginInfo');
   errEl.className='auth-error';errEl.textContent='';
+  infoEl.className='auth-info';infoEl.textContent='';
 
-  if(!email||!pass){errEl.className='auth-error show';errEl.textContent='Please enter your email and password.';return;}
+  if(!email){errEl.className='auth-error show';errEl.textContent='Please enter your email address.';return;}
 
   const btn=document.getElementById('loginBtn');
-  btn.disabled=true;btn.textContent='Logging in…';
+  btn.disabled=true;btn.textContent='Sending…';
 
-  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  const {error}=await sb.auth.signInWithOtp({
+    email,
+    options:{emailRedirectTo: window.location.href.split('#')[0]}
+  });
+
   if(error){
     errEl.className='auth-error show';
-    errEl.textContent='Incorrect email or password. Please try again.';
-    btn.disabled=false;btn.textContent='Log in';
+    errEl.textContent=error.message;
+    btn.disabled=false;btn.textContent='Send magic link';
     return;
   }
-  currentUser=data.user;
-  updateAuthUI();
-  closeModal();
-  go();
+
+  infoEl.className='auth-info show';
+  infoEl.textContent=`Magic link sent to ${email} — check your inbox and click the link to log in.`;
+  btn.disabled=true;btn.textContent='Link sent ✓';
 }
 
 async function logout(){
@@ -964,7 +939,7 @@ async function adminSave(id){
   const btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.textContent='Saving…';
 
-  const record={name,nation,city,price,rev,arr,est,employment,type,desc,running,industries,photos};
+  const record={name,nation,city,price,rev,arr,est,employment,type,description:desc,running,industries,photos};
 
   let error;
   if(id){
@@ -999,17 +974,7 @@ function pvNav(dir){pvIdx=(pvIdx+dir+pvPhotos.length)%pvPhotos.length;renderPV()
 function closePhotoViewer(){document.getElementById('photoViewer').classList.remove('open');}
 document.getElementById('photoViewer').addEventListener('click',e=>{if(e.target===e.currentTarget)closePhotoViewer();});
 
-/* =================================================================
-   EMAIL HELPER (calls Supabase Edge Function)
-================================================================= */
-async function callEmailFunction(payload){
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    const headers={'Content-Type':'application/json'};
-    if(session?.access_token)headers['Authorization']='Bearer '+session.access_token;
-    await fetch(RESEND_FUNCTION,{method:'POST',headers,body:JSON.stringify(payload)});
-  }catch(e){console.warn('Email send failed:',e);}
-}
+
 
 /* =================================================================
    SUPABASE AUTH LISTENER (restore session on page load)
