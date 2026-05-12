@@ -353,7 +353,7 @@ function fmt(n){
 }
 
 function visaOK(b){
-  return (b.price>80000)||(b.employment&&b.employment>5)||(b.arr&&b.arr>10000);
+  return (b.price>=150000)&&(b.employment&&b.employment>=5)&&(b.arr&&b.arr>=10000);
 }
 
 function typeClass(t){return t==='sale'?'tp-sale':t==='trespasse'?'tp-tresp':'tp-fran';}
@@ -846,7 +846,7 @@ function adminFormHTML(b){
       <div class="field"><label>Asking price (€)</label><input type="number" id="f_price" value="${isEdit?b.price:''}" placeholder="e.g. 850000"/></div>
       <div class="field"><label>Annual revenue</label><input type="text" id="f_rev" value="${isEdit?b.rev||'':''}" placeholder="e.g. €420K/yr"/></div>
       <div class="field"><label>Average Monthly Revenue (€)</label><input type="number" id="f_arr" value="${isEdit?b.arr||'':''}" placeholder="e.g. 85000" min="0"/>
-        <div style="font-size:10px;color:var(--muted);margin-top:3px">Visa badge: price &gt;€80K or employment &gt;5 or Avg. Monthly Revenue &gt;€10K</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">Visa badge: price ≥€150K AND employment ≥5 AND Avg. Monthly Revenue ≥€10K</div>
       </div>
       <div class="field"><label>Year established</label><input type="number" id="f_est" value="${isEdit?b.est||'':''}" placeholder="e.g. 2008"/></div>
       <div class="field"><label>Employment scope (jobs possible)</label><input type="number" id="f_employment" value="${isEdit?b.employment||'':''}" placeholder="e.g. 12" min="0"/></div>
