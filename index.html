@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SUOBiz — European Business Market</title>
+<title>SUOBiz — The Hidden Gems of Global Businesses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet"/>
@@ -209,7 +209,7 @@ body{background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(-
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-mark"><em>SUO</em>Biz</div>
-    <div class="logo-sub">European Business Market</div>
+    <div class="logo-sub">The Hidden Gems of Global Businesses</div>
     <div id="authArea">
       <button class="login-btn" onclick="openUserLogin()"><i class="ti ti-user-circle"></i>User Login</button>
     </div>
@@ -519,7 +519,7 @@ function openCard(id){
   if(!b)return;
   const stats=[];
   if(b.rev)stats.push(['Revenue',b.rev]);
-  if(b.arr)stats.push(['ARR',fmt(b.arr)]);
+  if(b.arr)stats.push(['Avg. Monthly Rev.',fmt(b.arr)]);
   if(b.est)stats.push(['Established',b.est]);
   if(b.staff)stats.push(['Staff',b.staff+' people']);
   if(b.employment)stats.push(['Employment scope',b.employment+' jobs possible']);
@@ -596,10 +596,11 @@ async function submitPrebook(id,name){
   const btn=document.getElementById('pbBtn');
   btn.disabled=true;btn.textContent='Sending…';
 
-  // Store pre-booking enquiry in Supabase so admin can review in dashboard
-  await sb.from('registrations').insert({
+  // Store pre-booking enquiry in dedicated enquiries table
+  await sb.from('enquiries').insert({
+    listing_id:id, listing_name:name,
     name:pName, email:pEmail, mobile:pMobile,
-    industries:`PRE-BOOKING: ${name} (ID ${id}) — ${pMsg||'No message'}`,
+    message:pMsg||'',
     created_at:new Date().toISOString()
   });
 
@@ -844,8 +845,8 @@ function adminFormHTML(b){
       <div class="field"><label>City</label><input type="text" id="f_city" value="${isEdit?b.city:''}" placeholder="e.g. Paris"/></div>
       <div class="field"><label>Asking price (€)</label><input type="number" id="f_price" value="${isEdit?b.price:''}" placeholder="e.g. 850000"/></div>
       <div class="field"><label>Annual revenue</label><input type="text" id="f_rev" value="${isEdit?b.rev||'':''}" placeholder="e.g. €420K/yr"/></div>
-      <div class="field"><label>ARR (€) — Annual Recurring Revenue</label><input type="number" id="f_arr" value="${isEdit?b.arr||'':''}" placeholder="e.g. 85000" min="0"/>
-        <div style="font-size:10px;color:var(--muted);margin-top:3px">Visa badge: price &gt;€80K or employment &gt;5 or ARR &gt;€10K</div>
+      <div class="field"><label>Average Monthly Revenue (€)</label><input type="number" id="f_arr" value="${isEdit?b.arr||'':''}" placeholder="e.g. 85000" min="0"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">Visa badge: price &gt;€80K or employment &gt;5 or Avg. Monthly Revenue &gt;€10K</div>
       </div>
       <div class="field"><label>Year established</label><input type="number" id="f_est" value="${isEdit?b.est||'':''}" placeholder="e.g. 2008"/></div>
       <div class="field"><label>Employment scope (jobs possible)</label><input type="number" id="f_employment" value="${isEdit?b.employment||'':''}" placeholder="e.g. 12" min="0"/></div>
