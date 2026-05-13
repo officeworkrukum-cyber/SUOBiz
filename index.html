@@ -209,7 +209,7 @@ body{background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(-
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-  <div class="mob-sidebar-close"><button onclick="document.getElementById('sidebar').classList.remove('mob-open')" style="display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);color:var(--white);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%"><i class="ti ti-arrow-left"></i> Back to listings</button></div>
+  <div class="mob-sidebar-close"><button onclick="closeSidebar()" style="display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border2);color:var(--white);border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer;width:100%"><i class="ti ti-arrow-left"></i> Back to listings</button></div>
   <div class="sidebar-logo">
     <div class="logo-mark"><em>SUO</em>Biz</div>
     <div class="logo-sub">The Hidden Gems of Global Businesses</div>
@@ -274,7 +274,7 @@ body{background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(-
 <main class="main">
   <div class="mob-topbar">
     <div class="mob-logo"><em>SUO</em>Biz</div>
-    <div class="mob-filter-btn" onclick="document.getElementById('sidebar').classList.toggle('mob-open')"><i class="ti ti-adjustments-horizontal"></i>Filters</div>
+    <div class="mob-filter-btn" onclick="toggleSidebar()"><i class="ti ti-adjustments-horizontal"></i>Filters</div>
   </div>
   <div class="main-header">
     <div class="results-count" id="resultsCount"><strong>—</strong> listings</div>
@@ -372,7 +372,16 @@ function closeModal(){
   document.body.style.overflow='';
 }
 document.getElementById('modalWrap').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-
+function toggleSidebar(){
+  const s=document.getElementById('sidebar');
+  const opening=!s.classList.contains('mob-open');
+  s.classList.toggle('mob-open');
+  document.body.style.overflow=opening?'hidden':'';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.body.style.overflow='';
+}
 function updatePrice(v){
   const val=Math.round(50000+Math.pow(v/100,2.2)*(50000000-50000));
   priceCeil=val;
