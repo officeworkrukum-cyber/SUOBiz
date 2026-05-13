@@ -118,7 +118,7 @@ body{background:var(--bg);font-family:'DM Sans',system-ui,sans-serif;color:var(-
 .loading-state{text-align:center;padding:3rem 1rem;color:var(--muted2)}
 .loading-state i{font-size:32px;display:block;margin-bottom:10px;color:var(--sky);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;-webkit-overflow-scrolling:touch;backdrop-filter:blur(4px)}
 .modal-wrap.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:1.75rem;width:100%;max-width:480px;margin:auto}
 .modal h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px;color:var(--white)}
@@ -322,10 +322,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 /* =================================================================
    CONSTANTS
 ================================================================= */
-const INDUSTRIES = ['Real Estate','Food & Beverage','Hospitality','Consulting','IT & Software','Jewellery & Precious Stones',
-  'Textiles','Machinery & Spares','Apparel','Electronics','Furniture','Gas Stations','Design','Architecture','Trade',
-  'Supermarkets','Wellness','Pharma','Retail','Warehousing & Logistics','Healthcare','Agriculture','Tourism','Finance',
-  'Manufacturing','Media','Construction','Energy','Personal Care','Culture','Utilities','Automobiles','B2B','B2C','Passive Income'];
+const INDUSTRIES = ['Real estate','Food & beverage','Hospitality','Consulting','IT & software',
+  'Textiles','Machinery & spares','Apparel','Electronics','Furniture','Gas stations',
+  'Supermarkets','Retail','Logistics','Healthcare','Agriculture','Tourism','Finance',
+  'Manufacturing','Media','Construction','Energy','Passive Income'];
 
 const ADMIN_USER = 'SUOGLOBAL';
 const ADMIN_PASS = '3XTR3MELY_TOUGH_USERNAME&PASSWORD';
@@ -365,8 +365,12 @@ function typeLabel(t){return t==='sale'?'For sale':t==='trespasse'?'Trespasse':'
 function showModal(html){
   document.getElementById('modalBox').innerHTML=html;
   document.getElementById('modalWrap').classList.add('open');
+  document.body.style.overflow='hidden';
 }
-function closeModal(){document.getElementById('modalWrap').classList.remove('open');}
+function closeModal(){
+  document.getElementById('modalWrap').classList.remove('open');
+  document.body.style.overflow='';
+}
 document.getElementById('modalWrap').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 
 function updatePrice(v){
@@ -567,7 +571,7 @@ function openCard(id){
     <div style="margin-bottom:1.1rem">${rows}</div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Close</button>
-      <button class="btn-submit" onclick="closeModal();openPrebook(${b.id})">Pre-book this listing <br>(for members only)</button>
+      <button class="btn-submit" onclick="closeModal();openPrebook(${b.id})">Pre-book this listing</button>
     </div>`);
 }
 
